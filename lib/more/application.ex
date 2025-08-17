@@ -8,14 +8,20 @@ defmodule More.Application do
   @impl true
   def start(_type, _args) do
     children = [
+      # Start the Telemetry supervisor
       MoreWeb.Telemetry,
+      # Start the Ecto repository
       More.Repo,
-      {DNSCluster, query: Application.get_env(:more, :dns_cluster_query) || :ignore},
+      # Start the PubSub system
       {Phoenix.PubSub, name: More.PubSub},
-      # Start a worker by calling: More.Worker.start_link(arg)
-      # {More.Worker, arg},
-      # Start to serve requests, typically the last entry
+      # Start Finch
+      {Finch, name: More.Finch},
+      # Start the Endpoint (http/https)
       MoreWeb.Endpoint
+      # Start the Entity Supervisor for our MUD engine (temporarily disabled for testing)
+      # More.Mud.Supervision.EntitySupervisor
+      # Start a worker by calling: More.Worker.start_link(arg)
+      # {More.Worker, arg}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
