@@ -29,6 +29,8 @@ import topbar from "../vendor/topbar"
 import "./game_hooks"
 // Import surface hooks
 import "./surface_hooks"
+// Import Svelte island hook
+import "./svelte_island_hook"
 
 const csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 const liveSocket = new LiveSocket("/live", Socket, {

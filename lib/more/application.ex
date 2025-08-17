@@ -19,7 +19,9 @@ defmodule More.Application do
       # Start the Endpoint (http/https)
       MoreWeb.Endpoint,
       # Start the World Manager for our layered world system
-      More.Mud.World.WorldManager
+      More.Mud.World.WorldManager,
+      # Start the Svelte Component Registry
+      MoreWeb.SvelteComponentRegistry
       # Start the Entity Supervisor for our MUD engine (temporarily disabled for testing)
       # More.Mud.Supervision.EntitySupervisor
       # Start a worker by calling: More.Worker.start_link(arg)

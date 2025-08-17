@@ -20,7 +20,7 @@ defmodule MoreWeb.Router do
   scope "/", MoreWeb do
     pipe_through :browser
 
-    get "/", PageController, :home
+    live "/", SveltePlaygroundLive, :index
   end
 
   # Other scopes may use custom stacks.
@@ -52,7 +52,7 @@ defmodule MoreWeb.Router do
 
     live_session :require_authenticated_user,
       on_mount: [{MoreWeb.UserAuth, :require_authenticated}] do
-      live "/game", GameLive.Surface, :index
+      live "/playground", SveltePlaygroundLive, :index
       live "/users/settings", UserLive.Settings, :edit
       live "/users/settings/confirm-email/:token", UserLive.Settings, :confirm_email
     end
