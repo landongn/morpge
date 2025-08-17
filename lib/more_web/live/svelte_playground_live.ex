@@ -26,7 +26,7 @@ defmodule MoreWeb.SveltePlaygroundLive do
 
     if Mix.env() == :dev do
       # In development, check for component updates periodically
-      send_update_after(__MODULE__, :check_components, 5000)
+      Process.send_after(self(), {:check_components}, 5000)
     end
 
     {:ok, socket}
@@ -85,7 +85,7 @@ defmodule MoreWeb.SveltePlaygroundLive do
 
     # Continue checking in development
     if Mix.env() == :dev do
-      send_update_after(__MODULE__, :check_components, 5000)
+      Process.send_after(self(), {:check_components}, 5000)
     end
 
     {:noreply, socket}
@@ -97,7 +97,7 @@ defmodule MoreWeb.SveltePlaygroundLive do
     socket = assign(socket, :memory_usage, memory_usage)
 
     # Continue updating
-    send_update_after(__MODULE__, :update_memory_usage, 10000)
+    Process.send_after(self(), {:update_memory_usage}, 10000)
     {:noreply, socket}
   end
 
