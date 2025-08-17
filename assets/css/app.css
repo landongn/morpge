@@ -6,6 +6,8 @@
 @source "../js";
 @source "../../lib/more_web";
 @import "./game.css";
+@import "./surface.css";
+@import "./world_viewer.css";
 
 /* A Tailwind plugin that makes "hero-#{ICON}" classes available.
    The heroicons installation itself is managed by your mix.exs */

@@ -1,0 +1,490 @@
+/* World Viewer Styles */
+
+.world-viewer {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+  background: #1a1a1a;
+  color: #ffffff;
+  font-family: 'Courier New', monospace;
+}
+
+/* Layer Controls */
+.layer-controls {
+  background: #2a2a2a;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #444;
+}
+
+.layer-controls h3 {
+  margin: 0 0 1rem 0;
+  color: #00ff00;
+  font-size: 1.2rem;
+}
+
+.layer-toggles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.layer-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  background: #333;
+  border-radius: 0.25rem;
+  border: 1px solid #555;
+}
+
+.layer-toggle:hover {
+  background: #444;
+}
+
+.layer-toggle input[type="checkbox"] {
+  margin: 0;
+}
+
+.layer-name {
+  font-size: 0.9rem;
+  font-weight: bold;
+}
+
+.layer-selector {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.layer-selector label {
+  font-weight: bold;
+  color: #00ff00;
+}
+
+.layer-selector select {
+  background: #333;
+  color: #fff;
+  border: 1px solid #555;
+  border-radius: 0.25rem;
+  padding: 0.25rem 0.5rem;
+}
+
+/* World Display */
+.world-display {
+  background: #2a2a2a;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #444;
+}
+
+.world-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #444;
+}
+
+.world-header h2 {
+  margin: 0;
+  color: #00ff00;
+}
+
+.player-info {
+  background: #333;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  border: 1px solid #555;
+  font-weight: bold;
+}
+
+.view-controls {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* World Grid */
+.world-grid {
+  display: grid;
+  gap: 1px;
+  background: #444;
+  border: 2px solid #666;
+  border-radius: 0.25rem;
+  padding: 1px;
+  margin: 1rem 0;
+  position: relative;
+}
+
+.grid-cell {
+  width: 2rem;
+  height: 2rem;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.grid-cell:hover {
+  border-color: #00ff00;
+  background: #111;
+}
+
+.grid-cell.editing {
+  cursor: crosshair;
+}
+
+/* Tiles */
+.tile {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.tile-ground {
+  color: #8B4513;
+}
+
+.tile-grass {
+  color: #228B22;
+}
+
+.tile-water {
+  color: #4169E1;
+}
+
+.tile-mountain {
+  color: #696969;
+}
+
+.tile-wall {
+  color: #A0522D;
+}
+
+.tile-atmosphere {
+  color: #87CEEB;
+}
+
+.tile-plants {
+  color: #32CD32;
+}
+
+.tile-tree {
+  color: #228B22;
+}
+
+.tile-bush {
+  color: #006400;
+}
+
+.tile-structures {
+  color: #D2691E;
+}
+
+.tile-house {
+  color: #CD853F;
+}
+
+.tile-floor_plans {
+  color: #F5DEB3;
+}
+
+.tile-doors {
+  color: #DAA520;
+}
+
+.tile-door {
+  color: #8B4513;
+}
+
+.tile-default {
+  color: #ffffff;
+}
+
+.tile-empty {
+  color: #333;
+}
+
+/* Player Marker */
+.player-marker {
+  position: absolute;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ff0000;
+  color: #ffffff;
+  font-weight: bold;
+  font-size: 1.5rem;
+  border-radius: 50%;
+  z-index: 10;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+/* Movement Controls */
+.movement-controls {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.movement-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.25rem;
+}
+
+.movement-grid button {
+  width: 3rem;
+  height: 3rem;
+  font-size: 1.5rem;
+  font-weight: bold;
+  background: #333;
+  color: #fff;
+  border: 1px solid #555;
+  border-radius: 0.25rem;
+  cursor: pointer;
+}
+
+.movement-grid button:hover {
+  background: #444;
+}
+
+.movement-grid button:disabled {
+  background: #222;
+  color: #666;
+  cursor: not-allowed;
+}
+
+/* Editing Tools */
+.editing-tools {
+  background: #2a2a2a;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #444;
+}
+
+.editing-tools h3 {
+  margin: 0 0 1rem 0;
+  color: #ff6600;
+  font-size: 1.2rem;
+}
+
+.tile-palette {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.layer-palette h4 {
+  margin: 0 0 0.5rem 0;
+  color: #00ff00;
+  font-size: 1rem;
+}
+
+.tile-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.tile-option {
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #333;
+  color: #fff;
+  border: 1px solid #555;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.tile-option:hover {
+  background: #444;
+  border-color: #00ff00;
+}
+
+.tile-option.selected {
+  background: #00ff00;
+  color: #000;
+  border-color: #00ff00;
+}
+
+.editing-info {
+  background: #333;
+  padding: 1rem;
+  border-radius: 0.25rem;
+  border: 1px solid #555;
+}
+
+.editing-info p {
+  margin: 0.5rem 0;
+  font-size: 0.9rem;
+}
+
+/* World Information */
+.world-info {
+  background: #2a2a2a;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #444;
+}
+
+.world-info h3 {
+  margin: 0 0 1rem 0;
+  color: #00ff00;
+  font-size: 1.2rem;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.info-item label {
+  font-weight: bold;
+  color: #00ff00;
+  font-size: 0.9rem;
+}
+
+.info-item span {
+  background: #333;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  border: 1px solid #555;
+  font-family: monospace;
+}
+
+/* Buttons */
+.btn {
+  background: #333;
+  color: #fff;
+  border: 1px solid #555;
+  border-radius: 0.25rem;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.btn:hover {
+  background: #444;
+}
+
+.btn:active {
+  background: #222;
+}
+
+.btn-sm {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.9rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .world-viewer {
+    padding: 0.5rem;
+  }
+  
+  .world-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+  
+  .view-controls {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .grid-cell {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+  
+  .tile {
+    font-size: 1rem;
+  }
+  
+  .player-marker {
+    width: 1.5rem;
+    height: 1.5rem;
+    font-size: 1.2rem;
+  }
+  
+  .movement-grid button {
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 1.2rem;
+  }
+  
+  .tile-option {
+    width: 1.5rem;
+    height: 1.5rem;
+    font-size: 1rem;
+  }
+}
+
+/* Dark theme enhancements */
+.world-viewer {
+  --bg-primary: #1a1a1a;
+  --bg-secondary: #2a2a2a;
+  --bg-tertiary: #333;
+  --border-color: #444;
+  --text-primary: #ffffff;
+  --text-secondary: #cccccc;
+  --accent-green: #00ff00;
+  --accent-orange: #ff6600;
+  --accent-red: #ff0000;
+}
+
+/* Scrollbar styling */
+.world-viewer ::-webkit-scrollbar {
+  width: 8px;
+}
+
+.world-viewer ::-webkit-scrollbar-track {
+  background: var(--bg-tertiary);
+}
+
+.world-viewer ::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 4px;
+}
+
+.world-viewer ::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-green);
+}

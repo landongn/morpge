@@ -1,0 +1,178 @@
+<div class="world-viewer">
+  <!-- Layer Controls -->
+  <div class="layer-controls">
+    <h3>World Layers</h3>
+    <div class="layer-toggles">
+      <%= for layer <- ["ground", "atmosphere", "plants", "structures", "floor_plans", "doors"] do %>
+        <label class="layer-toggle">
+          <input
+            type="checkbox"
+            checked={layer in @visible_layers}
+            phx-click="toggle_layer_visibility"
+            phx-value-layer={layer}
+          />
+                     <span class="layer-name"><%= String.upcase(layer) %></span>
+        </label>
+      <% end %>
+    </div>
+
+    <div class="layer-selector">
+      <label>Selected Layer:</label>
+      <select phx-change="select_layer">
+        <option value="all">All Layers</option>
+        <%= for layer <- ["ground", "atmosphere", "plants", "structures", "floor_plans", "doors"] do %>
+          <option value={layer} selected={@selected_layer == layer}>
+                         <%= String.upcase(layer) %>
+          </option>
+        <% end %>
+      </select>
+    </div>
+  </div>
+  
+<!-- World Display -->
+  <div class="world-display">
+    <div class="world-header">
+             <h2>Zone: <%= @zone_name %></h2>
+      <div class="player-info">
+                 Player Position: (<%= @player_x %>, <%= @player_y %>)
+      </div>
+      <div class="view-controls">
+        <button phx-click="zoom_in" class="btn btn-sm">Zoom In</button>
+        <button phx-click="zoom_out" class="btn btn-sm">Zoom Out</button>
+        <button phx-click="toggle_editing" class="btn btn-sm">
+                     <%= if @editing_mode, do: "Exit Edit", else: "Edit Mode" %>
+        </button>
+      </div>
+    </div>
+    
+<!-- World Grid -->
+    <div
+      class="world-grid"
+      style={"grid-template-columns: repeat(#{@view_width}, 1fr); grid-template-rows: repeat(#{@view_height}, 1fr);"}
+    >
+      <%= for y <- 0..(@view_height - 1) do %>
+        <%= for x <- 0..(@view_width - 1) do %>
+          <div
+            class="grid-cell"
+            data-x={x}
+            data-y={y}
+            phx-click={if @editing_mode, do: "place_tile", else: nil}
+            phx-value-x={x}
+            phx-value-y={y}
+          >
+            
+<!-- Render tiles from all visible layers -->
+            <%= for {layer_name, layer_data} <- @world_data do %>
+              <%= if layer_name in @visible_layers do %>
+                <%= case layer_data do %>
+                  <% [row | _] when is_list(row) -> %>
+                    <%= if y < length(layer_data) and x < length(row) do %>
+                      <% tile_char = Enum.at(row, x) || " " %>
+                      <div
+                        class={"tile tile-#{layer_name}"}
+                        data-layer={layer_name}
+                        data-tile={tile_char}
+                      >
+                                                 <%= if tile_char == " ", do: "&nbsp;", else: tile_char %>
+                      </div>
+                    <% end %>
+                  <% _ -> %>
+                    <div class="tile tile-empty"></div>
+                <% end %>
+              <% end %>
+            <% end %>
+          </div>
+        <% end %>
+      <% end %>
+      
+<!-- Player Marker -->
+      <div
+        class="player-marker"
+        style={"grid-column: #{@player_x + 1}; grid-row: #{@player_y + 1};"}
+      >
+        @
+      </div>
+    </div>
+    
+<!-- Movement Controls -->
+    <div class="movement-controls">
+      <div class="movement-grid">
+        <button phx-click="move_player" phx-value-direction="northwest" class="btn btn-sm">
+          ↖
+        </button>
+        <button phx-click="move_player" phx-value-direction="north" class="btn btn-sm">↑</button>
+        <button phx-click="move_player" phx-value-direction="northeast" class="btn btn-sm">
+          ↗
+        </button>
+        <button phx-click="move_player" phx-value-direction="west" class="btn btn-sm">←</button>
+        <button class="btn btn-sm" disabled>·</button>
+        <button phx-click="move_player" phx-value-direction="east" class="btn btn-sm">→</button>
+        <button phx-click="move_player" phx-value-direction="southwest" class="btn btn-sm">
+          ↙
+        </button>
+        <button phx-click="move_player" phx-value-direction="south" class="btn btn-sm">↓</button>
+        <button phx-click="move_player" phx-value-direction="southeast" class="btn btn-sm">
+          ↘
+        </button>
+      </div>
+    </div>
+  </div>
+  
+<!-- Editing Tools -->
+  <%= if @editing_mode do %>
+    <div class="editing-tools">
+      <h3>Tile Palette</h3>
+      <div class="tile-palette">
+        <%= for {layer_name, tiles} <- @tile_palette do %>
+          <div class="layer-palette">
+                         <h4><%= String.upcase(layer_name) %></h4>
+            <div class="tile-options">
+              <%= for tile <- tiles do %>
+                <button
+                  class={"tile-option #{if @selected_tile == {layer_name, tile}, do: "selected", else: ""}"}
+                  phx-click="select_tile"
+                  phx-value-layer={layer_name}
+                  phx-value-tile={tile}
+                >
+                                     <%= if tile == " ", do: "&nbsp;", else: tile %>
+                </button>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+
+      <div class="editing-info">
+        <p>
+                     Selected: <%= if @selected_tile,
+             do: "#{elem(@selected_tile, 0)}: #{elem(@selected_tile, 1)}",
+             else: "None" %>
+        </p>
+        <p>Click on the grid to place the selected tile.</p>
+      </div>
+    </div>
+  <% end %>
+  
+<!-- World Information -->
+  <div class="world-info">
+    <h3>World Status</h3>
+    <div class="info-grid">
+      <div class="info-item">
+        <label>Zone:</label>
+                 <span><%= @zone_name %></span>
+      </div>
+      <div class="info-item">
+        <label>View Size:</label>
+                 <span><%= @view_width %> × <%= @view_height %></span>
+      </div>
+      <div class="info-item">
+        <label>Visible Layers:</label>
+                 <span><%= length(@visible_layers) %></span>
+      </div>
+      <div class="info-item">
+        <label>Editing Mode:</label>
+                 <span><%= if @editing_mode, do: "On", else: "Off" %></span>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,100 @@
+<div class="player-status-pane" id={"player-status-#{@id}"}>
+  <!-- Player Header -->
+  <div class="player-header">
+    <div class="player-name">{@player_name}</div>
+    <div class="player-level">Level {@level}</div>
+  </div>
+  
+<!-- Experience Bar -->
+  <div class="experience-section">
+    <div class="experience-label">Experience</div>
+    <div class="experience-bar-container">
+      <div
+        class="experience-bar-fill"
+        style={"width: #{get_experience_percentage(@experience, @experience_to_next)}%"}
+      >
+      </div>
+    </div>
+    <div class="experience-text">{format_experience(@experience, @experience_to_next)}</div>
+  </div>
+  
+<!-- Status Bars -->
+  <div class="status-bars">
+    <!-- Health Bar -->
+    <div class="status-bar">
+      <div class="status-label">
+        <span class="status-icon">❤️</span>
+        <span class="status-name">Health</span>
+      </div>
+      <div class="status-bar-container">
+        <div
+          class={"status-bar-fill health-bar #{get_status_bar_class(get_status_percentage(@status.health.current, @status.health.max))}"}
+          style={"width: #{get_status_percentage(@status.health.current, @status.health.max)}%"}
+        >
+        </div>
+      </div>
+      <div class="status-value">{@status.health.current}/{@status.health.max}</div>
+    </div>
+    
+<!-- Mana Bar -->
+    <div class="status-bar">
+      <div class="status-label">
+        <span class="status-icon">🔮</span>
+        <span class="status-name">Mana</span>
+      </div>
+      <div class="status-bar-container">
+        <div
+          class={"status-bar-fill mana-bar #{get_status_bar_class(get_status_percentage(@status.mana.current, @status.mana.max))}"}
+          style={"width: #{get_status_percentage(@status.mana.current, @status.mana.max)}%"}
+        >
+        </div>
+      </div>
+      <div class="status-value">{@status.mana.current}/{@status.mana.max}</div>
+    </div>
+    
+<!-- Stamina Bar -->
+    <div class="status-bar">
+      <div class="status-label">
+        <span class="status-icon">⚡</span>
+        <span class="status-name">Stamina</span>
+      </div>
+      <div class="status-bar-container">
+        <div
+          class={"status-bar-fill stamina-bar #{get_status_bar_class(get_status_percentage(@status.stamina.current, @status.stamina.max))}"}
+          style={"width: #{get_status_percentage(@status.stamina.current, @status.stamina.max)}%"}
+        >
+        </div>
+      </div>
+      <div class="status-value">{@status.stamina.current}/{@status.stamina.max}</div>
+    </div>
+  </div>
+  
+<!-- Active Effects -->
+  <%= if length(@effects) > 0 do %>
+    <div class="effects-section">
+      <div class="effects-header">
+        <span class="effects-title">Active Effects</span>
+        <button class="effects-toggle" phx-click="show_effects">👁️</button>
+      </div>
+      <div class="effects-list">
+        <%= for effect <- Enum.take(@effects, 3) do %>
+          <div class="effect-item" title={effect.description}>
+            <span class="effect-icon">{effect.icon}</span>
+            <span class="effect-name">{effect.name}</span>
+            <span class="effect-duration">{effect.duration}s</span>
+          </div>
+        <% end %>
+        <%= if length(@effects) > 3 do %>
+          <div class="effect-more">+{length(@effects) - 3} more</div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+  
+<!-- Status Footer -->
+  <div class="status-footer">
+    <div class="footer-info">
+      <span class="last-update">Updated: {Calendar.strftime(@last_update, "%H:%M:%S")}</span>
+    </div>
+  </div>
+</div>

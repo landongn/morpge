@@ -1,0 +1,53 @@
+<div class="local-chat-pane" id={"local-chat-#{@id}"}>
+  <!-- Pane Toolbar -->
+  <div class="pane-toolbar">
+    <div class="toolbar-left">
+      <span class="room-name">{@room_name}</span>
+      <span class="message-count">{@message_count} messages</span>
+    </div>
+    <div class="toolbar-right">
+      <button class="toolbar-btn" phx-click="toggle_auto_scroll" title="Toggle Auto-scroll">
+        {if @auto_scroll, do: "📌", else: "📍"}
+      </button>
+      <button class="toolbar-btn" phx-click="scroll_to_top" title="Scroll to Top">
+        ⬆️
+      </button>
+      <button class="toolbar-btn" phx-click="scroll_to_bottom" title="Scroll to Bottom">
+        ⬇️
+      </button>
+      <button class="toolbar-btn" phx-click="clear_messages" title="Clear Messages">
+        🗑️
+      </button>
+    </div>
+  </div>
+  
+<!-- Messages Container -->
+  <div
+    class="messages-container"
+    id={"messages-#{@id}"}
+    phx-hook="ChatScroll"
+    data-auto-scroll={@auto_scroll}
+  >
+    <%= if Enum.empty?(@messages) do %>
+      <div class="no-messages">
+        <p>No local messages yet.</p>
+        <p>Room events and nearby actions will appear here.</p>
+      </div>
+    <% else %>
+      <%= for message <- @messages do %>
+        <div class={get_message_class(message)} id={"message-#{message.id}"}>
+          <span class="message-timestamp">[{format_timestamp(message.timestamp)}]</span>
+          <span class="message-content">{message.content}</span>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+  
+<!-- Pane Footer -->
+  <div class="pane-footer">
+    <div class="footer-info">
+      <span class="channel-name">Local Channel</span>
+      <span class="channel-status">Active</span>
+    </div>
+  </div>
+</div>

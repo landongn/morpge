@@ -1,0 +1,170 @@
+<div class="game-container">
+  <!-- Upper 2/3: Game World Display -->
+  <div class="game-world">
+    <div class="room-info">
+      <h2>Current Location</h2>
+      <div class="room-description">
+        You are in a featureless room. The walls are plain stone, and the air is still.
+      </div>
+      <div class="room-exits">
+        <strong>Exits:</strong> north, east
+      </div>
+    </div>
+    
+<!-- World Viewer Integration -->
+    <div class="world-viewer-section">
+      <h3>World View</h3>
+      <div class="world-viewer-placeholder">
+        <p>World viewer will be integrated here</p>
+        <button class="btn btn-primary" phx-click="show_world_viewer">
+          Open World Viewer
+        </button>
+      </div>
+    </div>
+
+    <div class="visible-entities">
+      <h3>You can see:</h3>
+      <ul class="entity-list">
+        <li class="entity-item">
+          <span class="entity-name">A wooden door</span>
+          <span class="entity-type">(exit)</span>
+        </li>
+        <li class="entity-item">
+          <span class="entity-name">A rusty key</span>
+          <span class="entity-type">(item)</span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="player-status">
+      <div class="status-bar">
+        <span class="status-label">Health:</span>
+        <div class="status-bar-container">
+          <div class="status-bar-fill health-bar"></div>
+        </div>
+                 <span class="status-value">
+           <%= @player_status.health.current %>/<%= @player_status.health.max %>
+         </span>
+      </div>
+
+      <div class="status-bar">
+        <span class="status-label">Mana:</span>
+        <div class="status-bar-container">
+          <div class="status-bar-fill mana-bar"></div>
+        </div>
+                 <span class="status-value"><%= @player_status.mana.current %>/<%= @player_status.mana.max %></span>
+      </div>
+
+      <div class="status-bar">
+        <span class="status-label">Stamina:</span>
+        <div class="status-bar-container">
+          <div class="status-bar-fill stamina-bar"></div>
+        </div>
+                 <span class="status-value">
+           <%= @player_status.stamina.current %>/<%= @player_status.stamina.max %>
+         </span>
+      </div>
+    </div>
+  </div>
+  
+<!-- Lower 1/3: Chat Interface -->
+  <div class="chat-interface">
+    <div class="chat-container">
+      <!-- World Channel -->
+      <div class={get_channel_class(:world, @active_channel)}>
+        <div class="chat-header">
+                     <h3><%= get_channel_title(:world) %></h3>
+          <button class="channel-button" phx-click="switch_channel" phx-value-channel="world">
+            Switch
+          </button>
+        </div>
+        <div class="chat-messages" id="world-messages">
+          <%= for message <- @world_messages do %>
+            <div class="message world-message" id={"world-message-#{message.id}"}>
+              <span class="message-timestamp">[{format_timestamp(message.timestamp)}]</span>
+              <span class="message-content">{message.content}</span>
+            </div>
+          <% end %>
+        </div>
+      </div>
+      
+<!-- Local Channel -->
+      <div class={get_channel_class(:local, @active_channel)}>
+        <div class="chat-header">
+                     <h3><%= get_channel_title(:local) %></h3>
+          <button class="channel-button" phx-click="switch_channel" phx-value-channel="local">
+            Switch
+          </button>
+        </div>
+        <div class="chat-messages" id="local-messages">
+          <%= for message <- @local_messages do %>
+            <div class="message local-message" id={"local-message-#{message.id}"}>
+              <span class="message-timestamp">[{format_timestamp(message.timestamp)}]</span>
+              <span class="message-content">{message.content}</span>
+            </div>
+          <% end %>
+        </div>
+      </div>
+      
+<!-- System Channel -->
+      <div class={get_channel_class(:system, @active_channel)}>
+        <div class="chat-header">
+          <h3>{get_channel_title(:system)}</h3>
+          <button class="channel-button" phx-click="switch_channel" phx-value-channel="system">
+            Switch
+          </button>
+        </div>
+        <div class="chat-messages" id="system-messages">
+          <%= for message <- @system_messages do %>
+            <div class="message system-message" id={"system-message-#{message.id}"}>
+              <span class="message-timestamp">[{format_timestamp(message.timestamp)}]</span>
+              <span class="message-content">{message.content}</span>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+    
+<!-- Command Input -->
+    <div class="command-input-container">
+      <form
+        phx-submit="send_command"
+        class="command-form"
+        id="command-form"
+      >
+        <div class="input-group">
+          <span class="input-prefix">></span>
+          <input
+            type="text"
+            name="command"
+            value={@command_input}
+            placeholder="Enter command (e.g., 'look', 'move north', 'say hello')"
+            class="command-input"
+            autocomplete="off"
+            autofocus
+            phx-change="update_command"
+          />
+          <button type="submit" class="command-submit">Send</button>
+          <button type="button" phx-click="clear_command" class="command-clear">Clear</button>
+        </div>
+      </form>
+
+      <div class="command-help">
+        <small>
+          <strong>Quick commands:</strong>
+          <button class="help-link" phx-click="send_command" phx-value-command="help">
+            help
+          </button>
+          |
+          <button class="help-link" phx-click="send_command" phx-value-command="look">
+            look
+          </button>
+          |
+          <button class="help-link" phx-click="send_command" phx-value-command="help movement">
+            movement
+          </button>
+        </small>
+      </div>
+    </div>
+  </div>
+</div>

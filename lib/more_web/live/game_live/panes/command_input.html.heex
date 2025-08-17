@@ -1,0 +1,62 @@
+<div class="command-input-pane" id={"command-input-#{@id}"}>
+  <div class="command-container">
+    <!-- Command Input Form -->
+    <form phx-submit="send_command" class="command-form" id={"command-form-#{@id}"}>
+      <div class="input-group">
+        <span class="input-prefix">></span>
+        <input
+          type="text"
+          name="command"
+          value={@command_input}
+          placeholder="Enter command (e.g., 'look', 'move north', 'say hello')"
+          class="command-input"
+          autocomplete="off"
+          autofocus
+          phx-change="update_command"
+          phx-keydown="navigate_history"
+          phx-focus="show_suggestions"
+          phx-blur="hide_suggestions"
+        />
+        <button type="submit" class="command-submit">Send</button>
+        <button type="button" phx-click="clear_command" class="command-clear">Clear</button>
+      </div>
+    </form>
+    
+<!-- Command Suggestions -->
+    <%= if length(@suggestions) > 0 do %>
+      <div class="suggestions-container">
+        <%= for suggestion <- @suggestions do %>
+          <div
+            class="suggestion-item"
+            phx-click="select_suggestion"
+            phx-value-suggestion={suggestion}
+          >
+            {suggestion}
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+    
+<!-- Quick Commands -->
+    <div class="quick-commands">
+      <small>
+        <strong>Quick commands:</strong>
+        <button class="help-link" phx-click="send_command" phx-value-command="help">help</button>
+        |
+        <button class="help-link" phx-click="send_command" phx-value-command="look">look</button>
+        |
+        <button class="help-link" phx-click="send_command" phx-value-command="help movement">
+          movement
+        </button>
+      </small>
+    </div>
+    
+<!-- Command History Info -->
+    <div class="history-info">
+      <small>
+        <span class="history-count">{length(@command_history)} commands in history</span>
+        <span class="history-hint">Use ↑↓ arrows to navigate history</span>
+      </small>
+    </div>
+  </div>
+</div>

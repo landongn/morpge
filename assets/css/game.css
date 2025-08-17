@@ -1,0 +1,441 @@
+/* Game Interface Styles */
+
+.game-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: #1a1a1a;
+  color: #e0e0e0;
+  font-family: 'Courier New', monospace;
+}
+
+/* Upper 2/3: Game World Display */
+.game-world {
+  flex: 2;
+  padding: 20px;
+  border-bottom: 2px solid #333;
+  overflow-y: auto;
+}
+
+.room-info h2 {
+  color: #4CAF50;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #333;
+  padding-bottom: 10px;
+}
+
+.room-description {
+  margin-bottom: 20px;
+  line-height: 1.6;
+  color: #ccc;
+}
+
+.room-exits {
+  margin-bottom: 20px;
+  color: #2196F3;
+}
+
+.visible-entities h3 {
+  color: #FF9800;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #333;
+  padding-bottom: 5px;
+}
+
+.entity-list {
+  list-style: none;
+  padding: 0;
+}
+
+.entity-item {
+  padding: 8px 0;
+  border-bottom: 1px solid #333;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.entity-name {
+  color: #E91E63;
+  font-weight: bold;
+}
+
+.entity-type {
+  color: #9C27B0;
+  font-size: 0.9em;
+}
+
+/* World Viewer Section */
+.world-viewer-section {
+  margin-top: 20px;
+  padding: 20px;
+  background-color: #2a2a2a;
+  border-radius: 8px;
+  border: 1px solid #333;
+}
+
+.world-viewer-section h3 {
+  color: #00ff00;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #333;
+  padding-bottom: 10px;
+}
+
+.world-viewer-placeholder {
+  text-align: center;
+  padding: 20px;
+  color: #ccc;
+}
+
+.world-viewer-placeholder p {
+  margin-bottom: 15px;
+}
+
+/* Button Styles */
+.btn {
+  display: inline-block;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 14px;
+  text-decoration: none;
+  transition: background-color 0.3s;
+}
+
+.btn-primary {
+  background-color: #2196F3;
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #1976D2;
+}
+
+.btn-secondary {
+  background-color: #757575;
+  color: white;
+}
+
+.btn-secondary:hover {
+  background-color: #616161;
+}
+
+/* Player Status Bars */
+.player-status {
+  margin-top: 30px;
+  padding: 20px;
+  background-color: #2a2a2a;
+  border-radius: 8px;
+  border: 1px solid #333;
+}
+
+.status-bar {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  gap: 15px;
+}
+
+.status-label {
+  min-width: 80px;
+  color: #4CAF50;
+  font-weight: bold;
+}
+
+.status-bar-container {
+  flex: 1;
+  height: 20px;
+  background-color: #333;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #555;
+}
+
+.status-bar-fill {
+  height: 100%;
+  transition: width 0.3s ease;
+  border-radius: 10px;
+}
+
+.health-bar {
+  background: linear-gradient(90deg, #4CAF50, #8BC34A);
+}
+
+.mana-bar {
+  background: linear-gradient(90deg, #2196F3, #03DAC6);
+}
+
+.stamina-bar {
+  background: linear-gradient(90deg, #FF9800, #FFC107);
+}
+
+.status-value {
+  min-width: 60px;
+  text-align: right;
+  color: #ccc;
+  font-weight: bold;
+}
+
+/* Lower 1/3: Chat Interface */
+.chat-interface {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: #0a0a0a;
+  border-top: 2px solid #333;
+}
+
+.chat-container {
+  display: flex;
+  flex: 1;
+  gap: 10px;
+  padding: 15px;
+}
+
+/* Individual Chat Boxes */
+.chat-box {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.chat-box.active {
+  border-color: #4CAF50;
+  box-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
+}
+
+.chat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 15px;
+  background-color: #2a2a2a;
+  border-bottom: 1px solid #333;
+  border-radius: 8px 8px 0 0;
+}
+
+.chat-header h3 {
+  margin: 0;
+  color: #4CAF50;
+  font-size: 1.1em;
+}
+
+.channel-button {
+  background-color: #333;
+  color: #ccc;
+  border: 1px solid #555;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8em;
+  transition: all 0.2s ease;
+}
+
+.channel-button:hover {
+  background-color: #4CAF50;
+  color: #fff;
+  border-color: #4CAF50;
+}
+
+/* Chat Messages */
+.chat-messages {
+  flex: 1;
+  padding: 15px;
+  overflow-y: auto;
+  background-color: #0f0f0f;
+  border-radius: 0 0 8px 8px;
+}
+
+.message {
+  margin-bottom: 8px;
+  padding: 5px 0;
+  border-bottom: 1px solid #333;
+}
+
+.message-timestamp {
+  color: #666;
+  font-size: 0.8em;
+  margin-right: 10px;
+}
+
+.message-content {
+  color: #e0e0e0;
+  line-height: 1.4;
+}
+
+.world-message .message-content {
+  color: #2196F3;
+}
+
+.local-message .message-content {
+  color: #4CAF50;
+}
+
+.system-message .message-content {
+  color: #FF9800;
+}
+
+/* Command Input */
+.command-input-container {
+  padding: 15px;
+  background-color: #1a1a1a;
+  border-top: 1px solid #333;
+}
+
+.command-form {
+  margin-bottom: 10px;
+}
+
+.input-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.input-prefix {
+  color: #4CAF50;
+  font-weight: bold;
+  font-size: 1.2em;
+}
+
+.command-input {
+  flex: 1;
+  background-color: #0f0f0f;
+  border: 1px solid #333;
+  color: #e0e0e0;
+  padding: 10px 15px;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  font-size: 1em;
+}
+
+.command-input:focus {
+  outline: none;
+  border-color: #4CAF50;
+  box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
+}
+
+.command-submit,
+.command-clear {
+  background-color: #4CAF50;
+  color: #fff;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s ease;
+}
+
+.command-submit:hover {
+  background-color: #45a049;
+}
+
+.command-clear {
+  background-color: #f44336;
+}
+
+.command-clear:hover {
+  background-color: #da190b;
+}
+
+.command-help {
+  text-align: center;
+}
+
+.help-link {
+  background: none;
+  border: none;
+  color: #2196F3;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 0.9em;
+  padding: 2px 5px;
+  border-radius: 3px;
+  transition: background-color 0.2s ease;
+}
+
+.help-link:hover {
+  background-color: rgba(33, 150, 243, 0.1);
+}
+
+/* Scrollbar Styling */
+.chat-messages::-webkit-scrollbar {
+  width: 8px;
+}
+
+.chat-messages::-webkit-scrollbar-track {
+  background: #0f0f0f;
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 4px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .chat-container {
+    flex-direction: column;
+  }
+  
+  .chat-box {
+    margin-bottom: 10px;
+  }
+  
+  .input-group {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .command-submit,
+  .command-clear {
+    width: 100%;
+  }
+}
+
+/* Animation for new messages */
+@keyframes messageSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.message {
+  animation: messageSlideIn 0.3s ease-out;
+}
+
+/* Status bar width calculation via CSS */
+.status-bar-fill[data-current][data-max] {
+  width: calc(var(--current) / var(--max) * 100%);
+}
+
+.status-bar-fill.health-bar {
+  --current: attr(data-current);
+  --max: attr(data-max);
+}
+
+.status-bar-fill.mana-bar {
+  --current: attr(data-current);
+  --max: attr(data-max);
+}
+
+.status-bar-fill.stamina-bar {
+  --current: attr(data-current);
+  --max: attr(data-max);
+}

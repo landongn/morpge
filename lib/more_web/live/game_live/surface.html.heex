@@ -1,0 +1,215 @@
+<div class="game-surface" id={"surface-#{@surface_id}"} style={get_background_style(@background)}>
+  <!-- Surface Controls -->
+  <div class="surface-controls">
+    <button class="control-btn" phx-click="toggle_pane_controls" title="Toggle Pane Controls">
+      <span class="control-icon">⚙️</span>
+    </button>
+    <button class="control-btn" phx-click="toggle_pane_list" title="Toggle Pane List">
+      <span class="control-icon">📋</span>
+    </button>
+  </div>
+  
+<!-- Pane Controls Panel -->
+  <%= if @show_pane_controls do %>
+    <div class="pane-controls-panel">
+      <h3>Pane Controls</h3>
+      <div class="control-section">
+        <h4>Background</h4>
+        <div class="background-controls">
+          <button
+            class="control-btn"
+            phx-click="set_background"
+            phx-value-background='{"type": "solid", "color": "#1a1a1a"}'
+          >
+            Dark
+          </button>
+          <button
+            class="control-btn"
+            phx-click="set_background"
+            phx-value-background='{"type": "solid", "color": "#2a2a2a"}'
+          >
+            Medium
+          </button>
+          <button
+            class="control-btn"
+            phx-click="set_background"
+            phx-value-background='{"type": "gradient", "gradient": "linear-gradient(45deg, #1a1a1a, #4a4a4a)"}'
+          >
+            Gradient
+          </button>
+        </div>
+      </div>
+
+      <div class="control-section">
+        <h4>Add New Pane</h4>
+        <form phx-submit="add_pane" class="add-pane-form">
+          <div class="form-row">
+            <input type="text" name="pane_config[title]" placeholder="Pane Title" required />
+            <select name="pane_config[type]" required>
+              <option value="chat">Chat</option>
+              <option value="status">Status</option>
+              <option value="input">Input</option>
+              <option value="custom">Custom</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <input type="number" name="pane_config[x]" placeholder="X" value="0" required />
+            <input type="number" name="pane_config[y]" placeholder="Y" value="0" required />
+            <input
+              type="number"
+              name="pane_config[width]"
+              placeholder="Width"
+              value="300"
+              required
+            />
+            <input
+              type="number"
+              name="pane_config[height]"
+              placeholder="Height"
+              value="200"
+              required
+            />
+          </div>
+          <div class="form-row">
+            <input
+              type="text"
+              name="pane_config[component]"
+              placeholder="Component Name"
+              required
+            />
+            <button type="submit" class="control-btn">Add Pane</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  <% end %>
+  
+<!-- Pane List Panel -->
+  <%= if @show_pane_list do %>
+    <div class="pane-list-panel">
+      <h3>Panes</h3>
+      <div class="pane-list">
+        <%= for {pane_id, pane} <- @panes do %>
+          <div class="pane-list-item">
+            <div class="pane-info">
+              <span class="pane-title">{pane.title}</span>
+              <span class="pane-type">{pane.type}</span>
+            </div>
+            <div class="pane-actions">
+              <button
+                class="control-btn small"
+                phx-click="toggle_pane_visibility"
+                phx-value-pane_id={pane_id}
+              >
+                {if pane.visible, do: "👁️", else: "👁️‍🗨️"}
+              </button>
+              <button
+                class="control-btn small"
+                phx-click="set_active_pane"
+                phx-value-pane_id={pane_id}
+              >
+                {if @active_pane == pane_id, do: "⭐", else: "☆"}
+              </button>
+              <button
+                class="control-btn small danger"
+                phx-click="remove_pane"
+                phx-value-pane_id={pane_id}
+              >
+                🗑️
+              </button>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+  
+<!-- Dynamic Panes -->
+  <%= for {pane_id, pane} <- @panes do %>
+    <%= if pane.visible do %>
+      <div
+        class={"pane pane-#{pane.type} #{if @active_pane == pane_id, do: "active"}"}
+        id={"pane-#{pane_id}"}
+        style={"position: absolute; left: #{pane.position.x}px; top: #{pane.position.y}px; width: #{pane.position.width}px; height: #{pane.position.height}px; z-index: #{pane.z_index};"}
+        phx-click="set_active_pane"
+        phx-value-pane_id={pane_id}
+        phx-hook="PaneResizer"
+        data-pane-id={pane_id}
+      >
+        <!-- Pane Header -->
+        <div class="pane-header">
+          <span class="pane-title">{pane.title}</span>
+          <div class="pane-controls">
+            <button
+              class="pane-btn"
+              phx-click="toggle_pane_visibility"
+              phx-value-pane_id={pane_id}
+              title="Hide Pane"
+            >
+              👁️
+            </button>
+            <button
+              class="pane-btn"
+              phx-click="remove_pane"
+              phx-value-pane_id={pane_id}
+              title="Remove Pane"
+            >
+              🗑️
+            </button>
+          </div>
+        </div>
+        
+<!-- Pane Content -->
+        <div class="pane-content">
+          <%= case pane.component do %>
+            <% "world_chat" -> %>
+              <.live_component
+                module={MoreWeb.GameLive.Panes.WorldChat}
+                id={"world-chat-#{pane_id}"}
+              />
+            <% "local_chat" -> %>
+              <.live_component
+                module={MoreWeb.GameLive.Panes.LocalChat}
+                id={"local-chat-#{pane_id}"}
+              />
+            <% "system_chat" -> %>
+              <.live_component
+                module={MoreWeb.GameLive.Panes.SystemChat}
+                id={"system-chat-#{pane_id}"}
+              />
+            <% "command_input" -> %>
+              <.live_component
+                module={MoreWeb.GameLive.Panes.CommandInput}
+                id={"command-input-#{pane_id}"}
+              />
+            <% "player_status" -> %>
+              <.live_component
+                module={MoreWeb.GameLive.Panes.PlayerStatus}
+                id={"player-status-#{pane_id}"}
+              />
+            <% _ -> %>
+              <div class="pane-placeholder">
+                <p>Component: {pane.component}</p>
+                <p>Type: {pane.type}</p>
+              </div>
+          <% end %>
+        </div>
+        
+<!-- Resize Handles -->
+        <div class="resize-handle resize-handle-nw" data-direction="nw"></div>
+        <div class="resize-handle resize-handle-ne" data-direction="ne"></div>
+        <div class="resize-handle resize-handle-sw" data-direction="sw"></div>
+        <div class="resize-handle resize-handle-se" data-direction="se"></div>
+        <div class="resize-handle resize-handle-n" data-direction="n"></div>
+        <div class="resize-handle resize-handle-s" data-direction="s"></div>
+        <div class="resize-handle resize-handle-e" data-direction="e"></div>
+        <div class="resize-handle resize-handle-w" data-direction="w"></div>
+      </div>
+    <% end %>
+  <% end %>
+  
+<!-- Surface Background Effects -->
+  <div class="surface-effects">
+    <!-- This area can be used for background graphics, particles, etc. -->
+  </div>
+</div>
