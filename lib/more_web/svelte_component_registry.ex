@@ -20,7 +20,7 @@ defmodule MoreWeb.SvelteComponentRegistry do
           created_at: DateTime.utc_now()
         },
         "counter" => %{
-          id: "ctr-001", 
+          id: "ctr-001",
           name: "counter",
           status: "Available",
           data: %{initial_value: 0, step: 1},
@@ -28,7 +28,7 @@ defmodule MoreWeb.SvelteComponentRegistry do
         },
         "3d-cube" => %{
           id: "cube-001",
-          name: "3d-cube", 
+          name: "3d-cube",
           status: "Available",
           data: %{size: 1.0, color: "#ff6b6b", rotation_speed: 0.01},
           created_at: DateTime.utc_now()
@@ -38,12 +38,12 @@ defmodule MoreWeb.SvelteComponentRegistry do
       last_build_time: nil,
       watchers: %{}
     }
-    
+
     # Start watching for component changes in development
     if Mix.env() == :dev do
       start_component_watcher()
     end
-    
+
     {:ok, initial_state}
   end
 
