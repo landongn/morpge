@@ -1,151 +1,126 @@
-<div class="min-h-screen bg-gray-900 text-white">
-  <div class="container mx-auto px-4 py-8">
-    <h1 class="text-4xl font-bold mb-8 text-center">Svelte Islands Playground</h1>
-
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-      <!-- LiveView Controls Panel -->
-      <div class="bg-gray-800 rounded-lg p-6">
-        <h2 class="text-2xl font-semibold mb-4">LiveView Controls</h2>
-        <div class="space-y-4">
-          <button
-            phx-click="add_component"
-            phx-value-component="hello-world"
-            class="w-full bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded"
-          >
-            Add Hello World Component
-          </button>
-
-          <button
-            phx-click="add_component"
-            phx-value-component="counter"
-            class="w-full bg-green-600 hover:bg-green-700 px-4 py-2 rounded"
-          >
-            Add Counter Component
-          </button>
-
-          <button
-            phx-click="add_component"
-            phx-value-component="3d-cube"
-            class="w-full bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded"
-          >
-            Add 3D Cube Component
-          </button>
-
-          <button
-            phx-click="clear_components"
-            class="w-full bg-red-600 hover:bg-red-700 px-4 py-2 rounded"
-          >
-            Clear All Components
-          </button>
-        </div>
-
-        <div class="mt-6 p-4 bg-gray-700 rounded">
-          <h3 class="font-semibold mb-2">Active Components:</h3>
-          <div id="component-list" class="text-sm">
-            <%= for component <- @active_components do %>
-              <div class="flex items-center justify-between py-1">
-                <span>{component.name}</span>
-                <button
-                  phx-click="remove_component"
-                  phx-value-id={component.id}
-                  class="text-red-400 hover:text-red-300 text-xs"
-                >
-                  Remove
-                </button>
-              </div>
-            <% end %>
-          </div>
-        </div>
-      </div>
-      
-<!-- Svelte Islands Render Area -->
-      <div class="bg-gray-800 rounded-lg p-6">
-        <h2 class="text-2xl font-semibold mb-4">Svelte Islands</h2>
-        <div
-          id="svelte-islands-container"
-          class="min-h-96 border-2 border-dashed border-gray-600 rounded-lg p-4"
-        >
-          <%= if Enum.empty?(@active_components) do %>
-            <div class="text-center text-gray-400">
-              <p>Click buttons to add Svelte components here</p>
-              <p class="text-sm mt-2">Components will be dynamically compiled and loaded</p>
-            </div>
-          <% else %>
-            <%= for component <- @active_components do %>
-              <div
-                id={"svelte-component-#{component.id}"}
-                class="mb-4 p-4 bg-gray-700 rounded"
-                phx-hook="SvelteIsland"
-                data-component-type={component.type}
-                data-component-props={Jason.encode!(component.props)}
-              >
-                <div class="text-center text-gray-400">
-                  <p>Loading {component.name}...</p>
-                  <div class="mt-2">
-                    <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-400 mx-auto">
-                    </div>
-                  </div>
-                </div>
-              </div>
-            <% end %>
-          <% end %>
-        </div>
-      </div>
+<div class="mud-surface-container">
+  <!-- MUD Surface Header -->
+  <div class="mud-header">
+    <h1 class="text-2xl font-bold text-white">More MUD Client</h1>
+    <div class="mud-controls">
+      <button
+        phx-click="add_component"
+        phx-value-component="world-scene"
+        class="bg-indigo-600 hover:bg-indigo-700 px-3 py-1 rounded text-sm"
+      >
+        Add World Scene
+      </button>
+      <button
+        phx-click="add_component"
+        phx-value-component="world-chat"
+        class="bg-green-600 hover:bg-green-700 px-3 py-1 rounded text-sm"
+      >
+        Add World Chat
+      </button>
+      <button
+        phx-click="add_component"
+        phx-value-component="local-chat"
+        class="bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded text-sm"
+      >
+        Add Local Chat
+      </button>
+      <button
+        phx-click="add_component"
+        phx-value-component="system-chat"
+        class="bg-yellow-600 hover:bg-yellow-700 px-3 py-1 rounded text-sm"
+      >
+        Add System Chat
+      </button>
+      <button
+        phx-click="add_component"
+        phx-value-component="player-status"
+        class="bg-purple-600 hover:bg-purple-700 px-3 py-1 rounded text-sm"
+      >
+        Add Player Status
+      </button>
+      <button
+        phx-click="add_component"
+        phx-value-component="command-input"
+        class="bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-sm"
+      >
+        Add Command Input
+      </button>
+      <button
+        phx-click="clear_components"
+        class="bg-gray-600 hover:bg-gray-700 px-3 py-1 rounded text-sm"
+      >
+        Clear All
+      </button>
     </div>
-    
-<!-- Component Status -->
-    <div class="mt-8 bg-gray-800 rounded-lg p-6">
-      <h2 class="text-2xl font-semibold mb-4">Component Registry Status</h2>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div class="bg-gray-700 p-4 rounded">
-          <h3 class="font-semibold text-green-400">Available Components</h3>
-          <div class="text-sm mt-2">
-            <%= for component <- @available_components do %>
-              <div class="py-1">
-                <span class="text-gray-300">{component.name}</span>
-                <span class="text-xs text-gray-500 ml-2">({component.status})</span>
-              </div>
-            <% end %>
-            <%= if Enum.empty?(@available_components) do %>
-              <div class="text-gray-500 italic">No components available yet</div>
-            <% end %>
-          </div>
-        </div>
+  </div>
 
-        <div class="bg-gray-700 p-4 rounded">
-          <h3 class="font-semibold text-blue-400">Build Status</h3>
-          <div class="text-sm mt-2">
-            <div class="py-1">
-              <span class="text-gray-300">Last Build:</span>
-              <span class="text-xs text-gray-500 ml-2">
-                <%= if @last_build_time do %>
-                  {Calendar.strftime(@last_build_time, "%H:%M:%S")}
-                <% else %>
-                  Never
-                <% end %>
-              </span>
-            </div>
-            <div class="py-1">
-              <span class="text-gray-300">Status:</span>
-              <span class="text-xs text-gray-500 ml-2">{@build_status}</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="bg-gray-700 p-4 rounded">
-          <h3 class="font-semibold text-yellow-400">Runtime Info</h3>
-          <div class="text-sm mt-2">
-            <div class="py-1">
-              <span class="text-gray-300">Components Loaded:</span>
-              <span class="text-xs text-gray-500 ml-2">{length(@active_components)}</span>
-            </div>
-            <div class="py-1">
-              <span class="text-gray-300">Memory Usage:</span>
-              <span class="text-xs text-gray-500 ml-2">{@memory_usage}</span>
-            </div>
-          </div>
+  <!-- MUD Surface Canvas -->
+  <div class="mud-surface" id="mud-surface">
+    <!-- Dynamic Components will be positioned here -->
+    <%= for component <- @active_components do %>
+      <div
+        id={"mud-component-#{component.id}"}
+        class="mud-component absolute"
+        style={"left: #{component.position.x}px; top: #{component.position.y}px; z-index: #{component.z_index || 1};"}
+        phx-hook="MudSurfaceComponent"
+        data-component-type={component.type}
+        data-component-props={Jason.encode!(component.props)}
+        data-component-id={component.id}
+        data-component-position={Jason.encode!(component.position)}
+        data-component-size={Jason.encode!(component.size)}
+        data-component-z-index={component.z_index || 1}
+      >
+        <!-- Component will be rendered here -->
+        <div class="component-loading">
+          <div class="loading-spinner"></div>
+          <span class="loading-text">Loading {component.type}...</span>
         </div>
       </div>
+    <% end %>
+
+    <!-- Surface Grid (for development) -->
+    <div class="surface-grid"></div>
+  </div>
+
+  <!-- Component Management Panel -->
+  <div class="component-panel">
+    <h3 class="text-lg font-semibold text-white mb-3">Active Components</h3>
+    <div class="component-list space-y-2">
+      <%= for component <- @active_components do %>
+        <div class="component-item bg-gray-700 p-2 rounded">
+          <div class="flex items-center justify-between">
+            <span class="text-sm text-gray-300">{component.type}</span>
+            <div class="flex space-x-1">
+              <button
+                phx-click="move_component"
+                phx-value-id={component.id}
+                phx-value-direction="up"
+                class="bg-blue-600 hover:bg-blue-700 px-2 py-1 rounded text-xs"
+              >
+                ↑
+              </button>
+              <button
+                phx-click="move_component"
+                phx-value-id={component.id}
+                phx-value-direction="down"
+                class="bg-blue-600 hover:bg-blue-700 px-2 py-1 rounded text-xs"
+              >
+                ↓
+              </button>
+              <button
+                phx-click="remove_component"
+                phx-value-id={component.id}
+                class="bg-red-600 hover:bg-red-700 px-2 py-1 rounded text-xs"
+              >
+                ×
+              </button>
+            </div>
+          </div>
+          <div class="text-xs text-gray-500 mt-1">
+            Pos: ({component.position.x}, {component.position.y}) | Z: {component.z_index || 1}
+          </div>
+        </div>
+      <% end %>
     </div>
   </div>
 </div>

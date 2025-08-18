@@ -9,6 +9,177 @@
 @import "./surface.css";
 @import "./world_viewer.css";
 
+/* MUD Surface System Styles */
+.mud-surface-container {
+  @apply min-h-screen bg-gray-900 text-white;
+  font-family: 'Courier New', monospace;
+}
+
+.mud-header {
+  @apply bg-gray-800 border-b border-gray-700 p-4;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.mud-controls {
+  @apply flex flex-wrap gap-2 mt-3;
+}
+
+.mud-surface {
+  @apply relative w-full h-screen;
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+    linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+}
+
+.mud-component {
+  @apply bg-gray-800 border border-gray-600 rounded-lg shadow-lg;
+  min-width: 200px;
+  min-height: 150px;
+  resize: both;
+  overflow: hidden;
+}
+
+.mud-component:hover {
+  @apply border-blue-400;
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+}
+
+.component-loading {
+  @apply flex flex-col items-center justify-center h-full text-gray-400;
+}
+
+.loading-spinner {
+  @apply w-8 h-8 border-2 border-gray-600 border-t-blue-400 rounded-full animate-spin mb-2;
+}
+
+.loading-text {
+  @apply text-sm;
+}
+
+.surface-grid {
+  @apply absolute inset-0 pointer-events-none;
+  background-image: 
+    linear-gradient(rgba(59, 130, 246, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59, 130, 246, 0.1) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+.component-panel {
+  @apply fixed right-4 top-20 w-64 bg-gray-800 border border-gray-600 rounded-lg p-4;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+}
+
+.component-item {
+  @apply transition-all duration-200;
+}
+
+.component-item:hover {
+  @apply bg-gray-600;
+}
+
+/* Chat Component Styles */
+.chat-component {
+  @apply flex flex-col h-full;
+}
+
+.chat-header {
+  @apply bg-gray-700 px-3 py-2 border-b border-gray-600 flex items-center justify-between;
+}
+
+.chat-messages {
+  @apply flex-1 overflow-y-auto p-3 space-y-2;
+}
+
+.chat-input {
+  @apply bg-gray-700 border-t border-gray-600 p-3;
+}
+
+.chat-input input {
+  @apply w-full bg-gray-600 border border-gray-500 rounded px-3 py-2 text-white;
+}
+
+.chat-input input:focus {
+  @apply outline-none border-blue-400;
+}
+
+/* World Scene Component */
+.world-scene-component {
+  @apply w-full h-full;
+}
+
+/* Player Status Component */
+.player-status-component {
+  @apply p-3;
+}
+
+.status-bar {
+  @apply w-full bg-gray-700 rounded-full h-2 mb-2;
+}
+
+.health-bar {
+  @apply bg-red-500 h-2 rounded-full transition-all duration-300;
+}
+
+.mana-bar {
+  @apply bg-blue-500 h-2 rounded-full transition-all duration-300;
+}
+
+.stamina-bar {
+  @apply bg-green-500 h-2 rounded-full transition-all duration-300;
+}
+
+/* Command Input Component */
+.command-input-component {
+  @apply p-3;
+}
+
+.command-history {
+  @apply bg-gray-700 rounded p-2 mb-2 text-sm text-gray-300;
+  max-height: 100px;
+  overflow-y: auto;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .mud-controls {
+    @apply flex-col;
+  }
+  
+  .component-panel {
+    @apply fixed bottom-0 left-0 right-0 top-auto w-full;
+    max-height: 200px;
+  }
+}
+
+/* Component Resize Handles */
+.mud-component::after {
+  content: '';
+  @apply absolute bottom-0 right-0 w-4 h-4 cursor-se-resize;
+  background: linear-gradient(-45deg, transparent 30%, rgba(59, 130, 246, 0.5) 30%, rgba(59, 130, 246, 0.5) 70%, transparent 70%);
+}
+
+/* Drag and Drop Styles */
+.mud-component.dragging {
+  @apply opacity-75;
+  transform: rotate(5deg);
+}
+
+.mud-component.drag-over {
+  @apply border-green-400;
+  box-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
+}
+
+/* Z-Index Management */
+.mud-component[data-z-index="1"] { z-index: 1; }
+.mud-component[data-z-index="2"] { z-index: 2; }
+.mud-component[data-z-index="3"] { z-index: 3; }
+.mud-component[data-z-index="4"] { z-index: 4; }
+.mud-component[data-z-index="5"] { z-index: 5; }
+
 /* A Tailwind plugin that makes "hero-#{ICON}" classes available.
    The heroicons installation itself is managed by your mix.exs */
 @plugin "../vendor/heroicons";

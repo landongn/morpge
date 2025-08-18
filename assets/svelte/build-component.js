@@ -24,24 +24,37 @@ console.log(`Output: ${outputPath}`)
 
 try {
   await build({
-    plugins: [svelte()],
+    configFile: false, // Don't use vite.config.js
+    plugins: [
+      svelte({
+        compilerOptions: {
+          runes: true
+        }
+      })
+    ],
     build: {
+      target: 'esnext',
       lib: {
         entry: resolve(componentPath, 'index.svelte'),
         name: componentName.charAt(0).toUpperCase() + componentName.slice(1),
         fileName: componentName
       },
-      outDir: resolve(__dirname, 'dist'),
+      outDir: resolve(__dirname, 'dist', componentName),
       rollupOptions: {
-        external: ['svelte'],
+        external: ['svelte', 'three', '@threlte/core', '@threlte/extras'],
         output: {
-          globals: { svelte: 'Svelte' },
+          globals: { 
+            svelte: 'Svelte',
+            three: 'THREE',
+            '@threlte/core': 'ThrelteCore',
+            '@threlte/extras': 'ThrelteExtras'
+          },
           entryFileNames: `${componentName}.js`
         }
       }
     }
   })
-  
+
   console.log(`✅ Successfully built ${componentName}`)
 } catch (error) {
   console.error(`❌ Failed to build ${componentName}:`, error)

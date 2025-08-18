@@ -9,28 +9,107 @@ defmodule MoreWeb.SvelteComponentRegistry do
   end
 
   def init(_) do
-    # Initialize with default components
     initial_state = %{
       components: %{
-        "hello-world" => %{
-          id: "hw-001",
-          name: "hello-world",
+        "world-scene" => %{
+          id: "world-001",
+          name: "world-scene",
           status: "Available",
-          data: %{message: "Hello from Svelte Island!", color: "blue"},
+          data: %{
+            cameraPosition: %{x: 10, y: 15, z: 10},
+            cameraTarget: %{x: 0, y: 0, z: 0},
+            showGrid: true,
+            showAxes: true,
+            enableControls: true
+          },
           created_at: DateTime.utc_now()
         },
-        "counter" => %{
-          id: "ctr-001",
-          name: "counter",
+        "world-chat" => %{
+          id: "world-chat-001",
+          name: "world-chat",
           status: "Available",
-          data: %{initial_value: 0, step: 1},
+          data: %{
+            channel: "world",
+            maxMessages: 100,
+            autoScroll: true,
+            messages: [
+              %{
+                id: 1,
+                type: "system",
+                content: "Welcome to More MUD!",
+                timestamp: DateTime.utc_now()
+              },
+              %{
+                id: 2,
+                type: "player",
+                author: "GM",
+                content: "The world awaits your exploration.",
+                timestamp: DateTime.utc_now()
+              }
+            ]
+          },
           created_at: DateTime.utc_now()
         },
-        "3d-cube" => %{
-          id: "cube-001",
-          name: "3d-cube",
+        "local-chat" => %{
+          id: "local-chat-001",
+          name: "local-chat",
           status: "Available",
-          data: %{size: 1.0, color: "#ff6b6b", rotation_speed: 0.01},
+          data: %{
+            channel: "local",
+            maxMessages: 50,
+            autoScroll: true,
+            messages: [
+              %{id: 1, type: "system", content: "Local area chat", timestamp: DateTime.utc_now()}
+            ]
+          },
+          created_at: DateTime.utc_now()
+        },
+        "system-chat" => %{
+          id: "system-chat-001",
+          name: "system-chat",
+          status: "Available",
+          data: %{
+            channel: "system",
+            maxMessages: 50,
+            autoScroll: true,
+            messages: [
+              %{
+                id: 1,
+                type: "system",
+                content: "System messages will appear here",
+                timestamp: DateTime.utc_now()
+              }
+            ]
+          },
+          created_at: DateTime.utc_now()
+        },
+        "player-status" => %{
+          id: "player-status-001",
+          name: "player-status",
+          status: "Available",
+          data: %{
+            health: 100,
+            maxHealth: 100,
+            mana: 50,
+            maxMana: 100,
+            stamina: 75,
+            maxStamina: 100,
+            level: 1,
+            experience: 0,
+            nextLevel: 100
+          },
+          created_at: DateTime.utc_now()
+        },
+        "command-input" => %{
+          id: "command-input-001",
+          name: "command-input",
+          status: "Available",
+          data: %{
+            maxHistory: 20,
+            placeholder: "Enter command...",
+            commandHistory: [],
+            currentCommand: ""
+          },
           created_at: DateTime.utc_now()
         }
       },
@@ -122,7 +201,7 @@ defmodule MoreWeb.SvelteComponentRegistry do
     new_state = Map.put(state, :build_status, "Building #{component_name}")
 
     # Simulate build process
-    Task.async(fn ->
+    Task.start(fn ->
       # Simulate build time
       Process.sleep(1000)
       GenServer.cast(@registry_name, {:build_completed, component_name})
@@ -148,6 +227,12 @@ defmodule MoreWeb.SvelteComponentRegistry do
     # Trigger rebuild
     trigger_build(component_name)
 
+    {:noreply, state}
+  end
+
+  # Catch-all for unexpected messages (like Task references)
+  def handle_info(msg, state) do
+    Logger.debug("Received unexpected message: #{inspect(msg)}")
     {:noreply, state}
   end
 

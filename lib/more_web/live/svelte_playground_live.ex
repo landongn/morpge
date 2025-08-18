@@ -3,7 +3,6 @@ defmodule MoreWeb.SveltePlaygroundLive do
   require Logger
 
   def mount(_params, _session, socket) do
-    # Initialize with some default components
     socket =
       socket
       |> assign(:active_components, [])
@@ -12,11 +11,9 @@ defmodule MoreWeb.SveltePlaygroundLive do
       |> assign(:last_build_time, nil)
       |> assign(:memory_usage, "Unknown")
 
-    # Load available components from registry
     available_components = MoreWeb.SvelteComponentRegistry.list_components()
     socket = assign(socket, :available_components, available_components)
 
-    # Get build status
     build_status = MoreWeb.SvelteComponentRegistry.get_build_status()
 
     socket =
@@ -25,22 +22,31 @@ defmodule MoreWeb.SveltePlaygroundLive do
       |> assign(:last_build_time, build_status.last_build_time)
 
     if Mix.env() == :dev do
-      # In development, check for component updates periodically
       Process.send_after(self(), {:check_components}, 5000)
     end
+
+    Process.send_after(self(), {:update_memory_usage}, 10000)
 
     {:ok, socket}
   end
 
-  def handle_event("add_component", %{"component" => component_name}, socket) do
-    # Create a new component instance
+  def handle_event("add_component", %{"component" => component_type}, socket) do
+    # Create a new component instance with positioning
     component_id = generate_component_id()
+
+    # Calculate default position based on component type
+    position = get_default_position(component_type, socket.assigns.active_components)
+    size = get_default_size(component_type)
+    z_index = get_next_z_index(socket.assigns.active_components)
 
     new_component = %{
       id: component_id,
-      name: component_name,
-      type: component_name,
-      props: get_default_props(component_name),
+      name: component_type,
+      type: component_type,
+      position: position,
+      size: size,
+      z_index: z_index,
+      props: get_default_props(component_type),
       created_at: DateTime.utc_now()
     }
 
@@ -48,11 +54,11 @@ defmodule MoreWeb.SveltePlaygroundLive do
     socket = assign(socket, :active_components, active_components)
 
     # Trigger build if component doesn't exist
-    if !component_exists?(component_name) do
-      MoreWeb.SvelteComponentRegistry.trigger_build(component_name)
+    if !component_exists?(component_type) do
+      MoreWeb.SvelteComponentRegistry.trigger_build(component_type)
     end
 
-    Logger.info("Added component: #{component_name} with ID: #{component_id}")
+    Logger.info("Added component: #{component_type} at position #{inspect(position)}")
     {:noreply, socket}
   end
 
@@ -63,6 +69,59 @@ defmodule MoreWeb.SveltePlaygroundLive do
     socket = assign(socket, :active_components, active_components)
 
     Logger.info("Removed component with ID: #{component_id}")
+    {:noreply, socket}
+  end
+
+  def handle_event("move_component", %{"id" => component_id, "direction" => direction}, socket) do
+    active_components =
+      Enum.map(socket.assigns.active_components, fn component ->
+        if component.id == component_id do
+          case direction do
+            "up" -> %{component | z_index: component.z_index + 1}
+            "down" -> %{component | z_index: max(1, component.z_index - 1)}
+            _ -> component
+          end
+        else
+          component
+        end
+      end)
+
+    socket = assign(socket, :active_components, active_components)
+    Logger.info("Moved component #{component_id} #{direction}")
+    {:noreply, socket}
+  end
+
+  def handle_event(
+        "update_component_position",
+        %{"id" => component_id, "position" => position},
+        socket
+      ) do
+    active_components =
+      Enum.map(socket.assigns.active_components, fn component ->
+        if component.id == component_id do
+          %{component | position: position}
+        else
+          component
+        end
+      end)
+
+    socket = assign(socket, :active_components, active_components)
+    Logger.info("Updated component #{component_id} position to #{inspect(position)}")
+    {:noreply, socket}
+  end
+
+  def handle_event("update_component_size", %{"id" => component_id, "size" => size}, socket) do
+    active_components =
+      Enum.map(socket.assigns.active_components, fn component ->
+        if component.id == component_id do
+          %{component | size: size}
+        else
+          component
+        end
+      end)
+
+    socket = assign(socket, :active_components, active_components)
+    Logger.info("Updated component #{component_id} size to #{inspect(size)}")
     {:noreply, socket}
   end
 
@@ -98,6 +157,7 @@ defmodule MoreWeb.SveltePlaygroundLive do
 
     # Continue updating
     Process.send_after(self(), {:update_memory_usage}, 10000)
+
     {:noreply, socket}
   end
 
@@ -108,23 +168,128 @@ defmodule MoreWeb.SveltePlaygroundLive do
     |> Base.encode16(case: :lower)
   end
 
-  defp component_exists?(component_name) do
-    MoreWeb.SvelteComponentRegistry.get_component(component_name) != nil
+  defp component_exists?(component_type) do
+    # Check if component exists in registry
+    case MoreWeb.SvelteComponentRegistry.get_component(component_type) do
+      nil -> false
+      _ -> true
+    end
   end
 
-  defp get_default_props("hello-world") do
-    %{message: "Hello from Svelte Island!", color: "blue"}
+  defp get_default_position(component_type, existing_components) do
+    # Calculate position to avoid overlapping
+    base_positions = %{
+      # Full screen positioning
+      "world-scene" => %{x: 0, y: 0},
+      "world-chat" => %{x: 50, y: 600},
+      "local-chat" => %{x: 400, y: 600},
+      "system-chat" => %{x: 750, y: 600},
+      "player-status" => %{x: 1100, y: 100},
+      "command-input" => %{x: 50, y: 750}
+    }
+
+    base_position = Map.get(base_positions, component_type, %{x: 100, y: 100})
+
+    # Check for overlaps and adjust
+    adjusted_position = adjust_position_for_overlap(base_position, existing_components)
+
+    adjusted_position
   end
 
-  defp get_default_props("counter") do
-    %{initial_value: 0, step: 1}
+  defp adjust_position_for_overlap(position, existing_components) do
+    # Special handling for world-scene (full screen)
+    if position.x == 0 && position.y == 0 do
+      position
+    else
+      # Simple overlap detection - move component down and right if needed
+      overlap_found =
+        Enum.any?(existing_components, fn component ->
+          abs(component.position.x - position.x) < 200 &&
+            abs(component.position.y - position.y) < 150
+        end)
+
+      if overlap_found do
+        %{x: position.x + 50, y: position.y + 50}
+      else
+        position
+      end
+    end
   end
 
-  defp get_default_props("3d-cube") do
-    %{size: 1.0, color: "#ff6b6b", rotation_speed: 0.01}
+  defp get_default_size(component_type) do
+    case component_type do
+      # Full screen size
+      "world-scene" -> %{width: 1920, height: 1080}
+      "world-chat" -> %{width: 300, height: 200}
+      "local-chat" -> %{width: 300, height: 200}
+      "system-chat" -> %{width: 300, height: 200}
+      "player-status" -> %{width: 250, height: 300}
+      "command-input" -> %{width: 800, height: 100}
+      _ -> %{width: 300, height: 200}
+    end
   end
 
-  defp get_default_props(_) do
-    %{}
+  defp get_next_z_index(existing_components) do
+    case existing_components do
+      [] ->
+        1
+
+      components ->
+        max_z = Enum.max_by(components, & &1.z_index, fn -> 0 end).z_index
+        max_z + 1
+    end
+  end
+
+  defp get_default_props(component_type) do
+    case component_type do
+      "world-scene" ->
+        %{
+          cameraPosition: %{x: 10, y: 15, z: 10},
+          cameraTarget: %{x: 0, y: 0, z: 0},
+          showGrid: true,
+          showAxes: true,
+          enableControls: true
+        }
+
+      "world-chat" ->
+        %{
+          channel: "world",
+          maxMessages: 100,
+          autoScroll: true
+        }
+
+      "local-chat" ->
+        %{
+          channel: "local",
+          maxMessages: 50,
+          autoScroll: true
+        }
+
+      "system-chat" ->
+        %{
+          channel: "system",
+          maxMessages: 50,
+          autoScroll: true
+        }
+
+      "player-status" ->
+        %{
+          health: 100,
+          maxHealth: 100,
+          mana: 50,
+          maxMana: 100,
+          stamina: 75,
+          maxStamina: 100
+        }
+
+      "command-input" ->
+        %{
+          maxHistory: 20,
+          placeholder: "Enter command..."
+        }
+
+      _ ->
+        %{}
+    end
   end
 end
